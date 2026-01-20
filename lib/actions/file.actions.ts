@@ -78,7 +78,7 @@ export const getFiles = async () => {
 
         const queries = createQueries(currentUser)
 
-        console.log({ currentUser, queries})
+        console.log({ currentUser, queries })
 
         const files = await databases.listDocuments(
             appwriteConfig.databaseId,
@@ -86,12 +86,30 @@ export const getFiles = async () => {
             queries,
         )
 
-        console.log({ currentUser, queries})
+        console.log({ currentUser, queries })
 
         return parseStringify(files);
 
     } catch (error) {
         handleError(error, "failed to get files")
+    }
+}
+
+export const renameFile = async ({ fileId, name, extension, path }: RenameFileProps) => {
+    const { databases } = await createAdminClient();
+
+    try {
+        const newName = `${name}.${extension}`
+        const updatedFile = await databases.updateDocument(
+            appwriteConfig.databaseId,
+            appwriteConfig.filesCollectionId,
+            fileId,
+            {
+                name: newName,
+            }
+        );
+    } catch (error) {
+        handleError(error, "failed to rename file");
     }
 }
 
